@@ -1,9 +1,0 @@
-FROM maven:3.9.9-eclipse-tenurin-21-jammy AS BUILD_IMAGE
-RUN git clone https://github.com/hkhcoder/vprofile-project.&it
-RUN cd profile-project && git checkout containers && mn install
-
-FROM tomcat:10-jdk21
-RUN rm -rf /us/local/toucat/webapps/*
-COPY --from-BUILD_IMAGE profile-project/target/profile-v2.war /us/local/tomcat/webapps/ROOT.war 
-EXPOSE 8089
-CND ["catalina.sh", "run"]
