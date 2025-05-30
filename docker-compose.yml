@@ -1,39 +1,23 @@
-version: "1.0"
+version: '3.8'
 services:
-  vproapp:
-    build: 
-      context: ./Docker-files/app
-    image: sasidharsaz/vproapp
-    container_name: vproapp
-    ports:
-    - "8080:8080"
-    volumes:
-      - vproappdata:/usr/local/tomcat/webapps
-    depends_on:
-    - vprodb
-
-
   vprodb:
-    build: 
-      context: ./Docker-files/db
+    build:
+    context: ./Docker-files/db  # <-- build from Dockerfile in ./Docker-files/db
     image: sasidharsaz/vprofiledb
     container_name: vprodb
     ports:
       - "3306:3306"
-    environment:
-    - MYSQL_ROOT_PASSWORD=vprodbpass
     volumes:
       - vprodbdata:/var/lib/mysql
-    depends_on:
-    - vprocache01  
+    environment:
+      - MYSQL_ROOT_PASSWORD=vprodbpass
+      - MYSQL_DATABASE=accounts
 
   vprocache01:
-    build: memcached
+    image: memcached
     container_name: vprocache01
     ports:
       - "11211:11211"
-    depends_on:
-    - vpromq01
 
   vpromq01:
     image: rabbitmq
@@ -44,15 +28,30 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
 
+  vproapp:
+    build:
+      context: ./Docker-files/app
+    image: sasidharsaz/vprofileapp
+    container_name: vproapp
+    ports:
+      - "8080:8080"
+    volumes:
+      - vproappdata:/usr/local/tomcat/webapps
+    depends_on:
+      - vprodb
+      - vprocache01
+      - vpromq01
+
   vproweb:
-    build: 
+    build:
       context: ./Docker-files/web
     image: sasidharsaz/vprofileweb
     container_name: vproweb
     ports:
-      - "80:80"    
-
+      - "80:80"
+    depends_on:
+      - vproapp
 
 volumes:
-  vprodbdata: {}
-  vproappdata: {}
+   vprodbdata: {}
+   vproappdata: {}

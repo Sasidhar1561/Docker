@@ -1,12 +1,12 @@
 FROM ubuntu AS BUILD_IMAGE
 WORKDIR /
+RUN apt update && apt install git maven openjdk-17-jdk -y
 RUN git clone https://github.com/Sasidhar1561/Docker.git
-WORKDIR /Docker/
-RUN apt update && apt install maven openjdk-17-jdk -y
-RUN mvn clean install
+WORKDIR /Docker
+RUN MAVEN_OPTS="-Xmx1024m" mvn clean install -DskipTests
 
 
-FROM tomcat 
+FROM tomcat
 WORKDIR /usr/local/tomcat
 RUN rm -rf webapps/*
 COPY --from=BUILD_IMAGE /Docker/target/vprofile-v2.war webapps/ROOT.war
