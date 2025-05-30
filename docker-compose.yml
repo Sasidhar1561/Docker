@@ -2,7 +2,7 @@ version: '3.8'
 services:
   vprodb:
     build:
-    context: ./Docker-files/db  # <-- build from Dockerfile in ./Docker-files/db
+     context: ./Docker-files/db  # <-- build from Dockerfile in ./Docker-files/db
     image: sasidharsaz/vprofiledb
     container_name: vprodb
     ports:
